@@ -8,10 +8,12 @@ class IsPublishedCreatedAt(models.Model):
     """Класс.BaseModel"""
 
     is_published = models.BooleanField(
-        default=True, verbose_name='Опубликовано'
+        default=True,
+        verbose_name='Опубликовано'
     )
     created_at = models.DateTimeField(
-        auto_now_add=True, verbose_name='Добавлено'
+        auto_now_add=True,
+        verbose_name='Добавлено'
     )
 
     class Meta:
@@ -23,7 +25,10 @@ class IsPublishedCreatedAt(models.Model):
 class Category(IsPublishedCreatedAt):
     """Класс.Category"""
 
-    title = models.CharField('Заголовок', max_length=256)
+    title = models.CharField(
+        'Заголовок',
+        max_length=256
+    )
     description = models.TextField('Описание')
     slug = models.SlugField(
         'Идентификатор',
@@ -65,7 +70,10 @@ class Location(IsPublishedCreatedAt):
 class Post(IsPublishedCreatedAt):
     """Класс.Post"""
 
-    title = models.CharField('Заголовок', max_length=256)
+    title = models.CharField(
+        'Заголовок',
+        max_length=256
+    )
     text = models.TextField('Текст')
     pub_date = models.DateTimeField(
         'Дата и время публикации',
@@ -102,7 +110,7 @@ class Post(IsPublishedCreatedAt):
 
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
-
+        # ordering = ('-pub_date',)
 
 class Comment(IsPublishedCreatedAt):
     """Класс.Comment"""
