@@ -112,6 +112,7 @@ class Post(IsPublishedCreatedAt):
         verbose_name_plural = 'Публикации'
         # ordering = ('-pub_date',)
 
+
 class Comment(IsPublishedCreatedAt):
     """Класс.Comment"""
 
