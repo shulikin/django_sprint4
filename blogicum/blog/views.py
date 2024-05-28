@@ -13,25 +13,6 @@ from .models import Post, Category, Comment
 DISPLAY_POSTS = 10  # Пагинация.
 
 
-class PostFormMixin:
-    model = Post
-    template_name = 'blog/create.html'
-    form_class = PostForm
-    pk_url_kwarg = 'post_id'
-
-    def dispatch(self, request, *args, **kwargs):
-        post = get_object_or_404(
-            Post,
-            pk=self.kwargs['post_id']
-        )
-        if post.author != self.request.user:
-            return redirect(
-                'blog:post_detail',
-                post_id=self.kwargs['post_id']
-            )
-        return super().dispatch(request, *args, **kwargs)
-
-
 class PostQuerySet:
     pk_url_kwarg = 'post_id'
 
@@ -151,6 +132,37 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         )
 
 
+class PostFormMixin:
+    model = Post
+    template_name = 'blog/create.html'
+    form_class = PostForm
+    pk_url_kwarg = 'post_id'
+
+    def dispatch(self, request, *args, **kwargs):
+        post = get_object_or_404(
+            Post,
+            pk=self.kwargs['post_id']
+        )
+        if post.author != self.request.user:
+            return redirect(
+                'blog:post_detail',
+                post_id=self.kwargs['post_id']
+            )
+        return super().dispatch(request, *args, **kwargs)
+
+
+class PostUpdateView(PostFormMixin, UpdateView):
+    def get_success_url(self):
+        return reverse('blog:post_detail',
+                       args=[self.kwargs['post_id']])
+
+
+class PostDeleteView(PostFormMixin, DeleteView):
+    def get_success_url(self):
+        return reverse('blog:profile',
+                       args=[self.request.user.username])
+
+
 class CommentMixin(LoginRequiredMixin):
     model = Comment
     template_name = 'blog/comment.html'
@@ -173,18 +185,6 @@ class CommentMixin(LoginRequiredMixin):
                 post_id=self.kwargs['post_id']
             )
         return super().dispatch(request, *args, **kwargs)
-
-
-class PostUpdateView(PostFormMixin, UpdateView):
-    def get_success_url(self):
-        return reverse('blog:post_detail',
-                       args=[self.kwargs['post_id']])
-
-
-class PostDeleteView(PostFormMixin, DeleteView):
-    def get_success_url(self):
-        return reverse('blog:profile',
-                       args=[self.request.user.username])
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
