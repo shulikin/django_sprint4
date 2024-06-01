@@ -41,7 +41,7 @@ class Category(IsPublishedCreatedAt):
     )
 
     class Meta:
-        """Класс.Category.Meta"""
+
         verbose_name = "категория"
         verbose_name_plural = "Категории"
         ordering = ("title",)
@@ -59,6 +59,7 @@ class Location(IsPublishedCreatedAt):
     )
 
     class Meta:
+
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
 

@@ -1,6 +1,4 @@
 from django import forms
-from django.core.exceptions import ValidationError
-from django.utils.deconstruct import deconstructible
 
 from .models import Post, User, Comment
 
