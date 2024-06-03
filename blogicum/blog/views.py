@@ -7,12 +7,10 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import Http404
+from django.conf import settings
 
 from .forms import CommentForm, PostForm
 from .models import Post, Category, Comment
-
-DISPLAY_POSTS = 10  # Пагинация.
-SORT_VALUE = '-pub_date'  # Сортировка постов и комментариев.
 
 
 class PostQuerySet:
@@ -27,13 +25,13 @@ class PostQuerySet:
             is_published=True,
             category__is_published=True,
             pub_date__lte=timezone.now()
-        ).order_by(SORT_VALUE).all()
+        ).order_by(settings.SORT_VALUE).all()
 
 
 class PostCategoryView(PostQuerySet, ListView):
     template_name = 'blog/category.html'
     context_object_name = 'post_list'
-    paginate_by = DISPLAY_POSTS
+    paginate_by = settings.DISPLAY_POSTS
     category = None
 
     def get_queryset(self):
@@ -53,7 +51,7 @@ class PostCategoryView(PostQuerySet, ListView):
 
 
 class ProfileListView(PostQuerySet, ListView):
-    paginate_by = DISPLAY_POSTS
+    paginate_by = settings.DISPLAY_POSTS
     template_name = 'blog/profile.html'
     model = Post
 
@@ -67,7 +65,8 @@ class ProfileListView(PostQuerySet, ListView):
 
         queryset = queryset.filter(
             author=self.profile
-        ).annotate(comment_count=Count('comments')).order_by(SORT_VALUE)
+        ).annotate(comment_count=Count('comments')).order_by(
+            settings.SORT_VALUE)
         if self.request.user != self.profile:
             queryset = super().get_queryset().annotate(
                 comment_count=Count('comments'))
@@ -111,7 +110,7 @@ class PostDetailView(DetailView):
     def dispatch(self, request, *args, **kwargs):
         instance = get_object_or_404(Post, pk=self.kwargs['post_id'])
         if instance.author != self.request.user and not instance.is_published:
-            raise Http404()
+            raise Http404('Страница не найдена')
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -199,9 +198,6 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     template_name = 'blog/comment.html'
     form_class = CommentForm
 
-    # def get_context_data(self, **kwargs):
-    #     return dict(**super().get_context_data(**kwargs), form=CommentForm())
-
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.post = get_object_or_404(Post, pk=self.kwargs['post_id'])
@@ -221,7 +217,7 @@ class CommentDeletView(CommentMixin, DeleteView):
 
 
 class PostListView(PostQuerySet, ListView):
-    paginate_by = DISPLAY_POSTS
+    paginate_by = settings.DISPLAY_POSTS
     template_name = 'blog/index.html'
 
     def get_queryset(self):

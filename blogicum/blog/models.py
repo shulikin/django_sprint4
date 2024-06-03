@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 User = get_user_model()
 
@@ -110,7 +111,7 @@ class Post(IsPublishedCreatedAt):
         verbose_name = "публикация"
         verbose_name_plural = "Публикации"
         default_related_name = "posts"
-        ordering = ("-pub_date",)
+        ordering = (settings.SORT_VALUE,)
 
     def __str__(self):
         return self.title

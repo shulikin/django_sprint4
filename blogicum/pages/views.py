@@ -11,6 +11,14 @@ class RulesView(TemplateView):
     template_name = 'pages/rules.html'
 
 
+def page_forbidden(request, exception):
+    return render(
+        request,
+        'pages/403.html',
+        status=HTTPStatus.FORBIDDEN
+    )
+
+
 def csrf_failure(request, reason=''):
     return render(
         request,
